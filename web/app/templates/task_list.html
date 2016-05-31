@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}任务队列{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>任务队列</h1>
+    <div class="text-right">
+        <button type="button" class="btn btn-danger del" data-toggle="modal" data-target="#delete-warning">
+        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+        清理失败任务
+        </button>
+    </div>
+</div>
+
+
+<ul class="nav nav-tabs">
+    <li class="active"><a id="text" href="#text_tasks" data-toggle="tab">文本分析</a></li>
+    <li><a id="matrix" href="#matrix_tasks" data-toggle="tab">社交网络分析</a></li>
+</ul>
+
+<br>
+<div class="tab-content">
+
+<div id="text_tasks" class="tab-pane active">
+<div class="panel panel-info">
+  <div class="panel-heading">未完成的任务</div>
+{% if not running_tasks %}
+  <div class="panel-body">无</div>
+{% else %}
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>任务名称</th>
+        <th>使用词库</th>
+        <th>切词策略</th>
+          <th>提交时间</th>
+          <th>任务状态</th>
+
+        </tr>
+      </thead>
+      <tbody>
+      {% for task in running_tasks %}
+        <tr class="{% if task.status == TaskStatus.RUNNING %}info{% endif %}">
+          <th>
+            {{ task.name }}
+          </th>
+            <td>{{ task.library_name }}</td>
+            <td>{{ task.user_dict_name if task.user_dict_name else "默认" }}</td>
+          <td>{{ task.create_time | datetime_format }}</td>
+          <td>{{ task.get_status() }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+<br>
+
+
+<div class="text-right">
+        <!-- Single button -->
+<div class="btn-group">
+  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> 合并下载选中 <span class="caret"></span>
+  </button>
+  <ul id="merge-download" class="dropdown-menu">
+    <li><a href="{{ url_for('main.merge_text_download', file_type='result') }}">分词结果</a></li>
+    <li><a href="{{ url_for('main.merge_text_download', file_type='statistics') }}">统计结果</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="{{ url_for('main.merge_text_download', file_type='singleCount') }}">字频表</a></li>
+    <li><a href="{{ url_for('main.merge_text_download', file_type='wordCount') }}">词频表</a></li>
+  </ul>
+</div>
+</div>
+
+<div class="panel panel-success">
+  <div class="panel-heading" style="margin-bottom:15px;">已完成的任务</div>
+{% if not finished_tasks %}
+  <div class="panel-body">无</div>
+{% else %}
+
+<table class="table table-striped" id="finished-text-tasks">
+      <thead>
+        <tr>
+            <th><input type="checkbox" /></th>
+          <th>任务名称</th>
+        <th>使用词库</th>
+        <th>切词策略</th>
+          <th>提交时间</th>
+          <th>任务状态</th>
+          <th>分析用时</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for task in finished_tasks %}
+        <tr>
+          <td>
+              <input id="select_{{ task.id }}" type="checkbox" />
+          </td>
+          <th>
+            {{ task.name }}
+          </th>
+            <td>{{ task.library_name }}</td>
+            <td>{{ task.user_dict_name if task.user_dict_name else "默认" }}</td>
+          <td>{{ task.create_time | datetime_format }}</td>
+          <td>
+              <span class="label {% if task.status == TaskStatus.SUCCESS %}label-success{% else %}label-danger{% endif %}">{{ task.get_status() }}</span>
+          </td>
+            <td>
+                {% if task.end_time %}
+                {{ (task.end_time - task.begin_time) | timedelta_format }}
+                {% endif %}
+            </td>
+
+            <td>
+                {% if task.status == TaskStatus.SUCCESS  %}
+                <!-- Single button -->
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> 下载 <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                <li>
+                    <a href="{{ url_for('main.download_result', file_type='result') }}?file={{ task.filename }}">
+                    下载分词结果
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.download_result', file_type='statistics') }}?file={{ task.filename }}">
+                    下载统计结果
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.download_result', file_type='origin') }}?file={{ task.filename }}">下载原文件
+                    </a>
+                </li>
+              <li role="separator" class="divider"></li>
+                <li><a href="{{ url_for('main.download_result', file_type='singleCount') }}?file={{ task.filename }}">下载字频表</a></li>
+                <li><a href="{{ url_for('main.download_result', file_type='wordCount') }}?file={{ task.filename }}">下载词频表</a></li>
+                  </ul>
+                </div>
+
+
+                {% endif %}
+            </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+</div>
+
+<div id="matrix_tasks" class="tab-pane">
+<div class="panel panel-info">
+  <div class="panel-heading">未完成的任务</div>
+{% if not running_matrix_tasks %}
+  <div class="panel-body">无</div>
+{% else %}
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>任务名称</th>
+          <th>提交时间</th>
+          <th>任务状态</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for task in running_matrix_tasks %}
+        <tr class="{% if task.status == TaskStatus.RUNNING %}info{% endif %}">
+            <th>
+            {{ task.name }}
+          </th>
+          <td>{{ task.create_time | datetime_format }}</td>
+          <td>{{ task.get_status() }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+<br>
+
+<div class="panel panel-success">
+  <div class="panel-heading" style="margin-bottom:15px;">已完成的任务</div>
+{% if not finished_matrix_tasks %}
+  <div class="panel-body">无</div>
+{% else %}
+<table class="table table-striped" id="finished-matrix-tasks">
+      <thead>
+        <tr>
+          <th>任务名称</th>
+          <th>提交时间</th>
+          <th>任务状态</th>
+          <th>分析用时</th>
+          <th>文件下载</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for task in finished_matrix_tasks %}
+        <tr>
+          <th>
+            {{ task.name }}
+          </th>
+          <td>{{ task.create_time | datetime_format }}</td>
+          <td>
+              <span class="label {% if task.status == TaskStatus.SUCCESS %}label-success{% else %}label-danger{% endif %}">{{ task.get_status() }}</span>
+          </td>
+            <td>
+                {% if task.end_time %}
+                {{ (task.end_time - task.begin_time) | timedelta_format }}
+                {% endif %}
+            </td>
+
+            <td>
+                {% if task.status == TaskStatus.SUCCESS  %}
+                <a href="{{ url_for('main.download_matrix_result', file_type='matrix') }}?file={{ task.filename }}" class="btn btn-info btn-xs">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                    邻接矩阵
+                </a>
+                <a href="{{ url_for('main.download_matrix_result', file_type='map') }}?file={{ task.filename }}" class="btn btn-info btn-xs">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                    邻接表
+                </a>
+                <a href="{{ url_for('main.download_matrix_result', file_type='origin') }}?file={{ task.filename }}" class="btn btn-info btn-xs">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                    原文件
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+</div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="delete-warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <form action="{{ url_for('main.delete_fail_tasks') }}" method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">删除失败任务</h4>
+      </div>
+      <div class="modal-body">
+          <p>是否确定删除分析失败的任务？</p>
+          <p class="small">提示：该操作不会对分析成功的任务造成任何影响。定期处理清理失败的任务可提高页面加载速度。</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="submit" class="btn btn-danger">删除</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $('#finished-text-tasks').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.11/i18n/Chinese.json"
+            },
+            "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ] }]
+        });
+        $('#finished-matrix-tasks').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.11/i18n/Chinese.json"
+            }
+        });
+
+        if (location.hash == "#matrix_tasks") {
+            $("#matrix").tab("show");
+        } else if (location.hash == "#text_tasks") {
+            $("#text").tab("show");
+        }
+        $("#matrix").click(function() {
+            location.hash = "#matrix_tasks";
+        });
+        $("#text").click(function() {
+            location.hash = "#text_tasks";
+        });
+
+        $("#merge-download li a").click(function(event) {
+            selected_id = [];
+            $("td input[type=checkbox]").each(function () {
+                if (this.checked) {
+                    var task_id = this.id.split('_')[1];
+                    selected_id.push(task_id);
+                }
+            });
+            if (selected_id.length > 0) {
+                var href = $(this).attr("href");
+                var pos = href.indexOf("&");
+                if (pos != -1) {
+                    href = href.substring(0, pos);
+                }
+                $(this).attr("href", href + "&task_ids=" + selected_id.join(","));
+            } else {
+                event.preventDefault();
+            }
+        });
+
+    </script>
+{% endblock %}

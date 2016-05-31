@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}导入切词{% endblock %}
+{% block page_content %}
+{% if form.errors %}
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <ul>
+    {% for field, msg in form.errors.items() %}
+        <li>{{ field }}: {{ msg[0] }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="page-header">
+    <h1>切词管理</h1>
+    <div class="text-right">
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#add-dict">
+            <span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+            上传新方案</button>
+        <button type="button" class="btn btn-danger del">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            删除选中方案</button>
+    </div>
+</div>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+      {% if not current_user.is_administrator() %}
+      自定义切词
+      {% else %}
+      官方切词
+      {% endif %}
+  </div>
+{% if not current_user.dict %}
+  <div class="panel-body">无</div>
+{% else %}
+<table id="dict-table" class="table table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" /></th>
+          <th>方案名称</th>
+          <th>方案描述</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for dict in current_user.dict %}
+        <tr id="dict_{{ dict.id }}">
+          <td>
+            <input id="select_{{ dict.id }}" type="checkbox" />
+          </td>
+          <th>
+            {{ dict.name }}
+          {% if current_user.is_administrator() %}
+          <span class="label label-success">官方</span>
+           {% else %}
+          <span class="label label-primary">自定义</span>
+          {% endif %}
+          </th>
+          <td>{{ dict.description }}</td>
+          <td>{{ dict.create_at | datetime_format }}</td>
+            <td>
+                <a id="download_{{ dict.id }}" href="{{ url_for('main.download_dict') }}?file={{ dict.filename }}" class="btn btn-info btn-xs download">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                    下载</a>
+                <button id="delete_{{ dict.id }}" type="button" class="btn btn-danger btn-xs del">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    删除</button>
+            </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+<br>
+
+{% if not current_user.is_administrator() %}
+<div class="panel panel-success">
+  <div class="panel-heading">官方切词</div>
+{% if not official_dict %}
+  <div class="panel-body">无</div>
+{% else %}
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>方案名称</th>
+          <th>方案描述</th>
+          <th>创建时间</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for dict in official_dict %}
+        <tr>
+          <th>
+            {{ dict.name }}
+          <span class="label label-success">官方</span>
+          </th>
+          <td>{{ dict.description }}</td>
+          <td>{{ dict.create_at | datetime_format }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+{% endif %}
+<!-- Modal -->
+<div class="modal fade" id="add-dict" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">上传新方案</h4>
+      </div>
+      <div class="modal-body">
+        {{ wtf.quick_form(form, id="add-dict-form") }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="add-dict-btn" type="button" class="btn btn-primary">上传</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-dict" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">删除方案</h4>
+      </div>
+      <div class="modal-body">
+        你确定要删除选中的方案吗？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="delete-dict-btn" type="button" class="btn btn-danger">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+<script>
+$("#add-dict-btn").click(function() {
+    $("#add-dict-form").submit();
+});
+
+var selected_id = [];
+$(".del").click(function() {
+    selected_id = [];
+    if (this.id) {
+        selected_id.push(this.id.split("_")[1]);
+    } else {
+        $("#dict-table td input[type=checkbox]").each(function () {
+            if (this.checked) {
+                var dict_id = this.id.split('_')[1];
+                selected_id.push(dict_id);
+            }
+        });
+    }
+    if (selected_id.length > 0) {
+        $("#delete-dict").modal('show');
+    }
+    // console.log(selected_id);
+});
+
+$("#delete-dict-btn").click(function() {
+    $.ajax({
+        url: "{{ url_for('main.delete_dict') }}",
+        type: "DELETE",
+        data: { dicts: selected_id.join(",") },
+        success: function() {
+            location.reload();
+        }
+    });
+});
+</script>
+{% endblock %}

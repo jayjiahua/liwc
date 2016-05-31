@@ -1,0 +1,1 @@
+python web/manage.py clean_waiting_task

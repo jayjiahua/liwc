@@ -1,0 +1,208 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}文本分析程序{% endblock %}
+
+{% block head %}
+{{ super() }}
+<meta charset="utf-8">
+<style>
+body { padding-top: 70px; }
+.dropdown-menu > li > table {
+    display: block;
+    padding: 3px 18px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #262626;
+    white-space: nowrap;
+    margin-bottom: -10px;
+}
+
+.dropdown-menu > li  th {
+    color: #31b0d5;
+    width: 100%;
+}
+
+</style>
+
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/u/bs-3.3.6/dt-1.10.12/datatables.min.css"/>-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/u/bs/jqc-1.12.3,dt-1.10.12/datatables.min.css"/>
+
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('home.home') }}" style="color: #5bc0de">BDC Lab</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">LIWC System</a>
+        </div>
+            <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('main.analyse') }}">文本分析</a></li>
+                <li><a href="{{ url_for('main.network') }}">社交网络分析</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" aria-labelledby="dLabel">
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.tasks') }}">任务队列</a></li>
+                {% endif %}
+
+                {% if current_user.is_authenticated %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        管理中心<b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% if current_user.is_administrator() %}
+                            <li><a href="{{ url_for('main.user_manage') }}">管理用户</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('main.import_dict') }}">管理切词</a></li>
+                        <li><a href="{{ url_for('main.import_library') }}">管理词库</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        您好，{{ current_user.fullname }}<b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">基本信息</li>
+                        <li class="disabled">
+                            <table class="table">
+                                <tr>
+                                    <td>账号</td>
+                                    <th>{{ current_user.username }}</th>
+                                </tr>
+                                <tr>
+                                    <td>邮箱</td>
+                                    <th>{{ current_user.email }}</th>
+                                </tr>
+                                <tr>
+                                    <td>身份</td>
+                                    <th>{{ current_user.role.name }}</th>
+                                </tr>
+                                <tr>
+                                    <td>有效期至</td>
+                                    <th>{{ current_user.expire_at if current_user.expire_at else "永久" }}</th>
+                                </tr>
+                            </table>
+                        </li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">用户操作</li>
+                        <li><a href="{{ url_for('main.edit_password') }}">修改密码</a></li>
+                        <li><a href="{{ url_for('main.edit_profile') }}">修改资料</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">LIWC V2.2</li>
+                        <li><a href="#update-history"  data-toggle="modal" data-target="#update-history">版本历史</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{{ url_for('main.logout') }}">登出</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li><a href="{{ url_for('main.login') }}">登录</a></li>
+                {% endif %}
+            </ul>
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="update-history" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <form action="{{ url_for('main.delete_fail_tasks') }}" method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">版本更新历史</h4>
+      </div>
+      <div class="modal-body">
+<pre>
+V2.2 (2016.5.29)
+1. 词频和字频统计表的表头可查看分析文件名
+2. 支持分析结果文件合并下载
+3. 支持每个分析文件的字频和词频的单独下载
+4. 修复字频和词频统计的某些bug
+5. 支持清理失败任务
+6. 任务列表支持分页和查找
+
+V2.0 (2016.5.22)
+将所有系统入口进行整合，并增加统一的首页
+
+V1.8 (2016.5.18)
+1. 首页显示词频与字频条形图
+2. 支持词频和字频统计表下载
+
+V1.6 (2016.5.16)
+1. 新增自定义词库功能
+2. 支持批量上传
+3. 可自定义分析所在列
+
+V1.5 (2016.5.13)
+1. 重新设计系统架构，保证网站高可用性
+2. 支持多任务并行分析，性能提升
+3. 新增任务队列，并支持分析进度的查看以及结果的下载
+4. 可对历史分析的文本及结果进行下载
+
+V1.2 (2016.5.8)
+新增添加自定义切词功能
+
+V1.1 (2016.5.5)
+新增多角色用户系统
+
+V1.0 (2016.4.28)
+部署在服务器上的可用版本
+</pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">好的</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+
+<script type="text/javascript" src="https://cdn.datatables.net/u/bs/jqc-1.12.3,dt-1.10.12/datatables.min.js"></script>
+<!--<script type="text/javascript" src="https://cdn.datatables.net/u/bs-3.3.6/dt-1.10.12/datatables.min.js"></script>-->
+<script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+
+<script>
+$("table th input[type=checkbox]").change(function () {
+    var checked = this.checked;
+    $(this).closest("table").find("td input[type=checkbox]").each(function () {
+        this.checked = checked;
+    });
+});
+
+</script>
+{% endblock %}
+
+
+{% block inline_scripts %}{% endblock %}

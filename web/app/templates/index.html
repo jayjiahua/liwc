@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}首页 - LIWC{% endblock %}
+{% block page_content %}
+<div class="jumbotron">
+  <h1>LIWC分词系统</h1>
+  <p>中山大学大数据传播实验室</p>
+  <p><a class="btn btn-info btn-lg" href="{{ url_for('main.analyse') }}" role="button">
+      <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+      文本分析
+  </a>
+  <a class="btn btn-info btn-lg" href="{{ url_for('main.network') }}" role="button">
+      <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+      社交网络分析
+  </a></p>
+</div>
+
+<div id="word-ranking"></div>
+
+<div id="single-ranking"></div>
+
+  <p class="text-center"><a class="btn btn-info btn-lg" href="{{ url_for('main.download_word_table') }}" role="button">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+      下载词频统计表
+  </a>
+  <a class="btn btn-info btn-lg" href="{{ url_for('main.download_single_table') }}" role="button">
+      <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+      下载字频统计表
+  </a></p>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+<script>
+function showChart (categories, values) {
+    $('#word-ranking').highcharts({
+        chart: {
+            type: 'column',
+            margin: [ 50, 50, 100, 80]
+        },
+        title: {
+            text: '词频分析排行榜'
+        },
+        xAxis: {
+            categories: categories,
+            labels: {
+                rotation: -45,
+                align: 'right',
+                style: {
+                    fontSize: '16px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '词频 (次)'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: '词语出现次数: <b>{point.y} 次</b>',
+        },
+        series: [{
+            name: 'Words',
+            data: values,
+            dataLabels: {
+                enabled: true,
+                rotation: -90,
+                color: '#FFFFFF',
+                align: 'right',
+                x: 4,
+                y: 10,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif',
+                    textShadow: '0 0 3px black'
+                }
+            }
+        }]
+    });
+}
+
+function showChart2(categories, values) {
+    $('#single-ranking').highcharts({
+        chart: {
+            type: 'column',
+            margin: [ 50, 50, 100, 80]
+        },
+        title: {
+            text: '字频分析排行榜'
+        },
+        xAxis: {
+            categories: categories,
+            labels: {
+                //rotation: -45,
+                //align: 'right',
+                style: {
+                    fontSize: '16px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '字频 (次)'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: '文字出现次数: <b>{point.y} 次</b>',
+        },
+        series: [{
+            name: 'Words',
+            data: values,
+            dataLabels: {
+                enabled: true,
+                rotation: -90,
+                color: '#FFFFFF',
+                align: 'right',
+                x: 4,
+                y: 10,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif',
+                    textShadow: '0 0 3px black'
+                }
+            }
+        }]
+    });
+}
+
+$.get("{{ url_for('main.ranking') }}?type=word", function(data) {
+  var categories = [];
+  var values = [];
+  data = eval(data);
+  for (var i = 0 ; i < data.data.length ; i++) {
+    categories.push(data.data[i].word);
+    values.push(data.data[i].times);
+  }
+  showChart(categories, values);
+});
+
+$.get("{{ url_for('main.ranking') }}?type=single", function(data) {
+  var categories = [];
+  var values = [];
+  data = eval(data);
+  for (var i = 0 ; i < data.data.length ; i++) {
+    categories.push(data.data[i].word);
+    values.push(data.data[i].times);
+  }
+  showChart2(categories, values);
+});
+
+
+</script>
+{% endblock %}

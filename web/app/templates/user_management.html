@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}用户管理{% endblock %}
+{% block page_content %}
+
+{% if register_form.errors %}
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <ul>
+    {% for field, msg in register_form.errors.items() %}
+        <li>{{ field }}: {{ msg[0] }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="page-header">
+    <h1>
+        用户管理
+    </h1>
+    <div class="text-right">
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#add-user">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            新增用户
+        </button>
+        <button type="button" class="btn btn-danger del">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            删除选中用户
+        </button>
+    </div>
+</div>
+<table id="user-table" class="table table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" /></th>
+          <th>用户名</th>
+          <th>全名</th>
+          <th>电子邮箱</th>
+          <th>账号有效期</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for user in users %}
+
+        <tr id="user_{{ user.id }}" class="{% if user.is_expired() %}danger{% else %}info{% endif %}">
+          <td>
+            {% if not user.is_administrator() %}
+            <input id="select_{{ user.id }}" type="checkbox" />
+            {% endif %}
+          </td>
+          <th>
+            {{ user.username }}
+            <span class="label {% if user.is_administrator() %} label-success {% else %} label-primary {% endif %}">{{ user.role.name }}</span>
+          </th>
+          <td>{{ user.fullname }}</td>
+          <td>{{ user.email }}</td>
+          {% if user.expire_at %}
+          <td class="expire-date">{{ user.expire_at }}</td>
+          {% else %}
+          <td>永久</td>
+          {% endif %}
+            <td>
+                {% if not user.is_administrator() %}
+                <button id="edit_{{ user.id }}" type="button" class="btn btn-info btn-xs edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑</button>
+                <button id="delete_{{ user.id }}" type="button" class="btn btn-danger btn-xs del"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 删除</button>
+                {% endif %}
+            </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+
+<!-- Modal -->
+<div class="modal fade" id="add-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">新增用户</h4>
+      </div>
+      <div class="modal-body">
+        {{ wtf.quick_form(register_form, id="add-user-form") }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="add-user-btn" type="button" class="btn btn-primary">增加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="edit-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">编辑用户</h4>
+      </div>
+      <div class="modal-body">
+        {{ wtf.quick_form(edit_form, id="edit-user-form") }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="edit-user-btn" type="button" class="btn btn-primary">修改</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">删除用户</h4>
+      </div>
+      <div class="modal-body">
+        你确定要删除选中的用户吗？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="delete-user-btn" type="button" class="btn btn-danger">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+
+    $("#add-user-btn").click(function() {
+        $("#add-user-form").submit();
+    });
+
+    var selected_id = [];
+    $(".del").click(function() {
+        selected_id = [];
+        if (this.id) {
+            selected_id.push(this.id.split("_")[1]);
+        } else {
+            $("#user-table td input[type=checkbox]").each(function () {
+                if (this.checked) {
+                    var user_id = this.id.split('_')[1];
+                    selected_id.push(user_id);
+                }
+            });
+        }
+        if (selected_id.length > 0) {
+            $("#delete-user").modal('show');
+        }
+        // console.log(selected_id);
+    });
+
+    $("#delete-user-btn").click(function() {
+        $.ajax({
+            url: "{{ url_for('main.user_delete') }}",
+            type: "DELETE",
+            data: { users: selected_id.join(",") },
+            success: function() {
+                location.reload();
+            }
+        });
+    });
+
+    var user_id = null;
+    $(".edit").click(function() {
+        $("#edit-user-form input[type=checkbox]").attr("checked", false);
+        user_id = this.id.split("_")[1];
+        var date = $("#user_" + user_id + " td.expire-date").text();
+        console.log(date);
+        if (date) {
+          $("#edit-user-form input[type=date]").val(date);
+        } else {
+          $("#edit-user-form input[type=checkbox]").click();
+        }
+        if (user_id) {
+          $("#edit-user").modal("show");
+        }
+    });
+
+    $("#edit-user-btn").click(function() {
+        $("#edit-user-form").attr("action", "/user/" + user_id).submit();
+    });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BDC Lab</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- Fonts -->
+    <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+	<link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet" />
+    <!-- Squad theme CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='color/default.css') }}" rel="stylesheet">
+<style media="screen">
+.btns a {
+  margin: 30px 0px;
+}
+
+#introduction .container .row p {
+    text-indent: 32px;
+    color: #383838;
+}
+
+.service {
+  border-right: 1px solid #E8E5E5;
+}
+
+.my-shake > a {
+  color: #BBB5B5;
+  border-color: #BBB5B5;
+}
+
+.my-shake > a:focus {
+  color: #BBB5B5;
+  border-color: #BBB5B5;
+}
+
+.my-shake > a:hover {
+  color: #666;
+  border-color: #666;
+}
+
+.my-shake {
+  margin-top: 50px;
+}
+
+#introduction {
+    padding-top: 20px;
+    background: rgba(255, 255, 255, 0.7);
+    margin-bottom: 30px;
+    color: #666;
+}
+
+#introduction .slogan h2, #introduction .slogan h4 {
+    color: #fff;
+}
+
+</style>
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+	<!-- Preloader -->
+	<div id="preloader">
+	  <div id="load"></div>
+	</div>
+
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <h1>BDC LAB</h1>
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#intro">实验室简介</a></li>
+        <!--<li><a href="#about">实验室简介</a></li>-->
+		<li><a href="#service">系统入口</a></li>
+    		<li><a href="#contact">关注我们</a></li>
+      </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+	<!-- Section: intro -->
+    <section id="intro" class="intro" style="padding: 16% 0 30px 0;height:auto;min-height:100%;">
+        <div id="introduction">
+    <div class="container">
+		<div class="slogan">
+			<h2>中山大学大数据传播实验室</h2>
+			<h4>Lab for Big Data and Communication of Sun Yat-Sen University</h4>
+		</div>
+        <hr style="border-top: #A7A3A3 1px solid;">
+        <div class="wow bounceInUp row" data-wow-delay="0.2s">
+          <p class="text-left">一流的数据资源，一流的问题意识，一流的教学研究。秉承“三个一流”的追求，中山大学大数据传播实验室于2015年1月11日正式揭牌成立。实验室不仅有数据驱动的教学研究，更有问题驱动的前沿探索，目标定位于：建立华南地区最大规模的传播大数据仓库，以及给学术研究和社会服务提供“可沟通的大数据”研究支撑，从而实现洞察社会、促进沟通的价值起点和核心目标。</p>
+        </div>
+        <div class="wow bounceInUp row" data-wow-delay="0.4s">
+          <p class="text-left">本实验室由中山大学传播与设计学院与中山大学东校区教学实验中心共建。基于大数据，扎根沟通与传播，我们希望搭建一个融合文科和理科的跨学科交流平台和联系起学界和业界的跨界共享平台。目前，实验室已经与人民网、微信、腾讯、新浪微博、今日头条、宏博知微、凯迪网等多家互联网公司建立广泛且紧密的数据合作关系，并且通过数据抓取和存储拥有了海量的网络新闻、论坛、微博和微信相关传播大数据。</p>
+        </div>
+        <div class="wow bounceInUp row" data-wow-delay="0.6s">
+          <p class="text-left">目前，实验室已经跟国家互联网信息办公室、国家食品药品监管总局、人民网、广东省网信办、中山市委宣传部等多个政府和企业建立项目和报告合作。其中，实验室和微信、宏博知微联合发布的《微信谣言分析报告》已经产生广泛的社会影响，召开的“首届大数据与传播论坛”搭建起跨学科交流的学术平台。实验室由张志安教授担任主任，副主任由心理学博士何凌南、传播学博士钟智锦担任。</p>
+        </div>
+        </div>
+        </div>
+		<div class="page-scroll shake">
+			<a href="#service" class="btn btn-circle">
+				<i class="fa fa-angle-double-down"></i>
+			</a>
+		</div>
+
+    </section>
+	<!-- /Section: intro -->
+
+	<!-- Section: about -->
+    <!--<section id="about" class="home-section text-center">-->
+		<!--<div class="heading-about">-->
+			<!--<div class="container">-->
+			<!--<div class="row">-->
+				<!--<div class="col-lg-8 col-lg-offset-2">-->
+					<!--<div class="wow bounceInDown" data-wow-delay="0s">-->
+					<!--<div class="section-heading">-->
+					<!--<h2>实验室简介</h2>-->
+					<!--<i class="fa fa-2x fa-angle-down"></i>-->
+
+					<!--</div>-->
+					<!--</div>-->
+				<!--</div>-->
+			<!--</div>-->
+			<!--</div>-->
+		<!--</div>-->
+		<!--<div class="container">-->
+
+		<!--<div class="row">-->
+			<!--<div class="col-lg-2 col-lg-offset-5">-->
+				<!--<hr class="marginbot-50">-->
+			<!--</div>-->
+		<!--</div>-->
+        <!--<div class="wow bounceInUp row" data-wow-delay="0.2s">-->
+          <!--<p class="text-left">一流的数据资源，一流的问题意识，一流的教学研究。秉承“三个一流”的追求，中山大学大数据传播实验室于2015年1月11日正式揭牌成立。实验室不仅有数据驱动的教学研究，更有问题驱动的前沿探索，目标定位于：建立华南地区最大规模的传播大数据仓库，以及给学术研究和社会服务提供“可沟通的大数据”研究支撑，从而实现洞察社会、促进沟通的价值起点和核心目标。</p>-->
+        <!--</div>-->
+        <!--<div class="wow bounceInUp row" data-wow-delay="0.4s">-->
+          <!--<p class="text-left">本实验室由中山大学传播与设计学院与中山大学东校区教学实验中心共建。基于大数据，扎根沟通与传播，我们希望搭建一个融合文科和理科的跨学科交流平台和联系起学界和业界的跨界共享平台。目前，实验室已经与人民网、微信、腾讯、新浪微博、今日头条、宏博知微、凯迪网等多家互联网公司建立广泛且紧密的数据合作关系，并且通过数据抓取和存储拥有了海量的网络新闻、论坛、微博和微信相关传播大数据。</p>-->
+        <!--</div>-->
+        <!--<div class="wow bounceInUp row" data-wow-delay="0.6s">-->
+          <!--<p class="text-left">目前，实验室已经跟国家互联网信息办公室、国家食品药品监管总局、人民网、广东省网信办、中山市委宣传部等多个政府和企业建立项目和报告合作。其中，实验室和微信、宏博知微联合发布的《微信谣言分析报告》已经产生广泛的社会影响，召开的“首届大数据与传播论坛”搭建起跨学科交流的学术平台。实验室由张志安教授担任主任，副主任由心理学博士何凌南、传播学博士钟智锦担任。</p>-->
+        <!--</div>-->
+
+    <!--</div>-->
+
+    <!--<div class="wow page-scroll bounceInDown shake my-shake">-->
+			<!--<a href="#service" class="btn btn-circle">-->
+				<!--<i class="fa fa-angle-double-down"></i>-->
+			<!--</a>-->
+		<!--</div>-->
+	<!--</section>-->
+	<!-- /Section: about -->
+
+
+	<!-- Section: services -->
+    <section id="service" class="home-section text-center bg-gray">
+
+		<div class="heading-about">
+			<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<div class="wow bounceInDown" data-wow-delay="0.4s">
+					<div class="section-heading">
+					<h2>系统入口</h2>
+					<i class="fa fa-2x fa-angle-down"></i>
+
+					</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+    <div class="container">
+
+    <div class="row">
+      <div class="col-lg-2 col-lg-offset-5">
+        <hr class="marginbot-50">
+      </div>
+    </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-3 col-md-3 service">
+        <div class="wow fadeInUp" data-wow-delay="0.2s">
+        <div class="service-box">
+          <div class="service-icon">
+            <img src="{{ url_for('static', filename='img/icons/service-icon-1.png') }}" alt="" />
+          </div>
+          <div class="text-center btns">
+              <h2>数据分析平台</h2>
+              <a href="http://222.200.180.204/webservice/" class="btn btn-skin btn-block" target="_blank">LDA系统</a>
+              <a href="{{ url_for('main.index') }}" class="btn btn-skin btn-block" target="_blank">LIWC系统</a>
+          </div>
+        </div>
+        </div>
+            </div>
+      <div class="col-xs-6 col-sm-3 col-md-3 service">
+        <div class="wow fadeInUp" data-wow-delay="0.5s">
+          <div class="service-box">
+          <div class="service-icon">
+            <img src="{{ url_for('static', filename='img/icons/service-icon-3.png') }}" alt="" />
+          </div>
+          <div class="text-center btns">
+              <h2>数据抓取平台</h2>
+              <a href="http://222.200.180.214:8080/" class="btn btn-skin btn-block" target="_blank">微博监控</a>
+              <a href="http://222.200.180.214:8080/kmonitor_wx/index_localhost.jsp" class="btn btn-skin btn-block" target="_blank">微信监控</a>
+          </div>
+        </div>
+            </div>
+          </div>
+      <div class="col-xs-6 col-sm-3 col-md-3 service">
+        <div class="wow fadeInUp" data-wow-delay="0.8s">
+          <div class="service-box">
+          <div class="service-icon">
+            <img src="{{ url_for('static', filename='img/icons/service-icon-2.png') }}" alt="" />
+          </div>
+          <div class="text-center btns">
+              <h2>数据图表</h2>
+              <a href="{{ url_for('chart.words') }}" class="btn btn-skin btn-block" target="_blank">思维与心态</a>
+              <a href="{{ url_for('chart.cities') }}" class="btn btn-skin btn-block" target="_blank">互动与联系</a>
+          </div>
+        </div>
+        </div>
+            </div>
+      <div class="col-xs-6 col-sm-3 col-md-3">
+        <div class="wow fadeInUp" data-wow-delay="1s">
+          <div class="service-box">
+          <div class="service-icon">
+            <img src="{{ url_for('static', filename='img/icons/service-icon-4.png') }}" alt="" />
+          </div>
+          <div class="text-center btns">
+              <h2>事件分析平台</h2>
+              <a href="http://ef.zhiweidata.com/" class="btn btn-skin btn-block" target="_blank">事件博物馆</a>
+          </div>
+        </div>
+      </div>
+            </div>
+        </div>
+    </div>
+    <div class="wow page-scroll bounceInDown shake my-shake">
+      <a href="#contact" class="btn btn-circle">
+        <i class="fa fa-angle-double-down"></i>
+      </a>
+    </div>
+	</section>
+	<!-- /Section: services -->
+
+  <section id="contact" class="home-section text-center">
+
+  <div class="heading-about">
+    <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <div class="wow bounceInDown" data-wow-delay="0.4s">
+        <div class="section-heading">
+        <h2>关注我们</h2>
+        <i class="fa fa-2x fa-angle-down"></i>
+
+        </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="container">
+
+  <div class="row">
+    <div class="col-lg-2 col-lg-offset-5">
+      <hr class="marginbot-50">
+    </div>
+  </div>
+  <div class="col-md-offset-3 col-sm-offset-3">
+
+      <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-4">
+      <div class="wow fadeInUp" data-wow-delay="0.2s">
+              <div class="team boxed-grey">
+                  <div class="inner">
+                      <h5>公众号</h5>
+                      <p class="subtitle" style="text-indent:0;">大数据传播实验室</p>
+                      <div class="avatar"><img src="{{ url_for('static', filename='img/team/1.JPG') }}" alt="" class="img-responsive" /></div>
+                  </div>
+              </div>
+      </div>
+          </div>
+    <div class="col-xs-6 col-sm-4 col-md-4">
+      <div class="wow fadeInUp" data-wow-delay="0.5s">
+              <div class="team boxed-grey">
+                  <div class="inner">
+                      <h5>公众号</h5>
+                      <p class="subtitle" style="text-indent:0;">谣言特工队</p>
+                      <div class="avatar"><img src="{{ url_for('static', filename='img/team/2.PNG') }}" alt="" class="img-responsive" /></div>
+
+                  </div>
+              </div>
+      </div>
+          </div>
+            </div>
+    <!-- <div class="col-xs-6 col-sm-3 col-md-3">
+      <div class="wow bounceInUp" data-wow-delay="0.8s">
+              <div class="team boxed-grey">
+                  <div class="inner">
+                      <h4>微博</h4>
+                      <div class="avatar"><img src="img/team/3.jpg" alt="" class="img-responsive img-circle" /></div>
+
+                  </div>
+              </div>
+      </div>
+          </div>
+    <div class="col-xs-6 col-sm-3 col-md-3">
+      <div class="wow bounceInUp" data-wow-delay="1s">
+              <div class="team boxed-grey">
+                  <div class="inner">
+                      <h4>...</h4>
+                      <div class="avatar"><img src="img/team/4.jpg" alt="" class="img-responsive img-circle" /></div>
+
+                  </div>
+              </div>
+      </div>
+          </div> -->
+      </div>
+  </div>
+</section>
+
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-lg-12">
+					<div class="wow shake" data-wow-delay="0.4s">
+					<div class="page-scroll marginbot-30">
+						<a href="#intro" id="totop" class="btn btn-circle">
+							<i class="fa fa-angle-double-up animated"></i>
+						</a>
+					</div>
+					</div>
+					<p>&copy;Copyright 2016 - 中山大学大数据传播实验室</p>
+                    <p> All rights reserved. </p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+    <!-- Core JavaScript Files -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.easing.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.scrollTo.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+	<!--<script type="text/javascript">-->
+	<!--var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");-->
+	<!--document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fac45a0f68a119fbe4d1c4c3ac3044dbd' type='text/javascript'%3E%3C/script%3E"));-->
+	<!--</script>-->
+</body>
+
+</html>

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}导入词库{% endblock %}
+{% block page_content %}
+{% if form.errors %}
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <ul>
+    {% for field, msg in form.errors.items() %}
+        <li>{{ field }}: {{ msg[0] }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="page-header">
+    <h1>词库管理</h1>
+    <div class="text-right">
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#add-dict">
+            <span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+            上传新词库</button>
+        <button type="button" class="btn btn-danger del">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            删除选中词库</button>
+    </div>
+</div>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+      {% if not current_user.is_administrator() %}
+      自定义词库
+      {% else %}
+      官方词库
+      {% endif %}
+  </div>
+{% if not current_user.libraries %}
+  <div class="panel-body">无</div>
+{% else %}
+<table id="dict-table" class="table table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" /></th>
+          <th>词库名称</th>
+          <th>词库描述</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for library in current_user.libraries %}
+        <tr id="dict_{{ library.id }}">
+          <td>
+            <input id="select_{{ library.id }}" type="checkbox" />
+          </td>
+          <th>
+            {{ library.name }}
+          {% if current_user.is_administrator() %}
+          <span class="label label-success">官方</span>
+           {% else %}
+          <span class="label label-primary">自定义</span>
+          {% endif %}
+          </th>
+          <td>{{ library.description }}</td>
+          <td>{{ library.create_at | datetime_format }}</td>
+            <td>
+                <a href="{{ url_for('main.download_library') }}?file={{ library.word_dict }}" class="btn btn-info btn-xs download">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                    下载【词语-类别】表</a>
+                <a href="{{ url_for('main.download_library') }}?file={{ library.class_dict }}" class="btn btn-info btn-xs download">
+                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+                    下载【类别-解释】表</a>
+                <button id="delete_{{ library.id }}" type="button" class="btn btn-danger btn-xs del">
+                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    删除词库</button>
+            </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+<br>
+
+{% if not current_user.is_administrator() %}
+<div class="panel panel-success">
+  <div class="panel-heading">官方词库</div>
+{% if not official_libraries %}
+  <div class="panel-body">无</div>
+{% else %}
+<table class="table table-striped">
+      <thead>
+        <tr>
+          <th>词库名称</th>
+          <th>词库描述</th>
+          <th>创建时间</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for library in official_libraries %}
+        <tr>
+          <th>
+            {{ library.name }}
+          <span class="label label-success">官方</span>
+          </th>
+          <td>{{ library.description }}</td>
+          <td>{{ library.create_at | datetime_format }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+</table>
+{% endif %}
+</div>
+{% endif %}
+<!-- Modal -->
+<div class="modal fade" id="add-dict" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">上传新词库</h4>
+      </div>
+      <div class="modal-body">
+        {{ wtf.quick_form(form, id="add-dict-form") }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="add-dict-btn" type="button" class="btn btn-primary">上传</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-dict" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">删除词库</h4>
+      </div>
+      <div class="modal-body">
+        你确定要删除选中的词库吗？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="delete-dict-btn" type="button" class="btn btn-danger">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+<script>
+$("#add-dict-btn").click(function() {
+    $("#add-dict-form").submit();
+});
+
+var selected_id = [];
+$(".del").click(function() {
+    selected_id = [];
+    if (this.id) {
+        selected_id.push(this.id.split("_")[1]);
+    } else {
+        $("#dict-table td input[type=checkbox]").each(function () {
+            if (this.checked) {
+                var dict_id = this.id.split('_')[1];
+                selected_id.push(dict_id);
+            }
+        });
+    }
+    if (selected_id.length > 0) {
+        $("#delete-dict").modal('show');
+    }
+    // console.log(selected_id);
+});
+
+$("#delete-dict-btn").click(function() {
+    $.ajax({
+        url: "{{ url_for('main.delete_library') }}",
+        type: "DELETE",
+        data: { libs: selected_id.join(",") },
+        success: function() {
+            location.reload();
+        }
+    });
+});
+</script>
+{% endblock %}
