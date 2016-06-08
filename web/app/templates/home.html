@@ -60,6 +60,10 @@
     color: #fff;
 }
 
+.avatar img {
+    margin: auto;
+}
+
 </style>
 </head>
 
@@ -216,8 +220,11 @@
           </div>
           <div class="text-center btns">
               <h2>数据抓取平台</h2>
-              <a href="http://222.200.180.214:8080/" class="btn btn-skin btn-block" target="_blank">微博监控</a>
-              <a href="http://222.200.180.214:8080/kmonitor_wx/index_localhost.jsp" class="btn btn-skin btn-block" target="_blank">微信监控</a>
+              <a href="http://vms.izhonghong.com/zd_weibo/index.jsp" class="btn btn-skin btn-block" target="_blank">微博监控</a>
+              <a href="http://kms.izhonghong.com/zd_weixin/index_localhost.jsp" class="btn btn-skin btn-block" target="_blank">微信监控</a>
+
+              <!--<a href="http://222.200.180.214:8080/" class="btn btn-skin btn-block" target="_blank">微博监控</a>-->
+              <!--<a href="http://222.200.180.214:8080/kmonitor_wx/index_localhost.jsp" class="btn btn-skin btn-block" target="_blank">微信监控</a>-->
           </div>
         </div>
             </div>
@@ -283,33 +290,45 @@
       <hr class="marginbot-50">
     </div>
   </div>
-  <div class="col-md-offset-3 col-sm-offset-3">
-
+  <div class="col-md-offset-1 col-sm-offset-1">
+    <!--<div>-->
       <div class="row">
           <div class="col-xs-6 col-sm-4 col-md-4">
-      <div class="wow fadeInUp" data-wow-delay="0.2s">
-              <div class="team boxed-grey">
-                  <div class="inner">
-                      <h5>公众号</h5>
-                      <p class="subtitle" style="text-indent:0;">大数据传播实验室</p>
-                      <div class="avatar"><img src="{{ url_for('static', filename='img/team/1.JPG') }}" alt="" class="img-responsive" /></div>
-                  </div>
+              <div class="wow fadeInUp" data-wow-delay="0.2s">
+                      <div class="team boxed-grey">
+                          <div class="inner">
+                              <h5>公众号</h5>
+                              <p class="subtitle" style="text-indent:0;">大数据传播实验室</p>
+                              <div class="avatar"><img src="{{ url_for('static', filename='img/team/1.JPG') }}" alt="" class="img-responsive" /></div>
+                          </div>
+                      </div>
               </div>
-      </div>
           </div>
-    <div class="col-xs-6 col-sm-4 col-md-4">
-      <div class="wow fadeInUp" data-wow-delay="0.5s">
-              <div class="team boxed-grey">
-                  <div class="inner">
-                      <h5>公众号</h5>
-                      <p class="subtitle" style="text-indent:0;">谣言特工队</p>
-                      <div class="avatar"><img src="{{ url_for('static', filename='img/team/2.PNG') }}" alt="" class="img-responsive" /></div>
+            <div class="col-xs-6 col-sm-4 col-md-4">
+              <div class="wow fadeInUp" data-wow-delay="0.5s">
+                      <div class="team boxed-grey">
+                          <div class="inner">
+                              <h5>公众号</h5>
+                              <p class="subtitle" style="text-indent:0;">辟谣特工队</p>
+                              <div class="avatar"><img src="{{ url_for('static', filename='img/team/2.JPG') }}" alt="" class="img-responsive" /></div>
 
-                  </div>
+                          </div>
+                      </div>
               </div>
-      </div>
-          </div>
             </div>
+          <div class="col-xs-6 col-sm-4 col-md-4">
+              <div class="wow fadeInUp" data-wow-delay="0.5s">
+                      <div class="team boxed-grey">
+                          <div class="inner">
+                              <h5>调查</h5>
+                              <p class="subtitle" style="text-indent:0;"> 问卷列表 </p>
+                              <div class="avatar"><img src="{{ url_for('static', filename='img/team/3.JPG') }}" alt="" class="img-responsive" /></div>
+
+                          </div>
+                      </div>
+              </div>
+          </div>
+        </div>
     <!-- <div class="col-xs-6 col-sm-3 col-md-3">
       <div class="wow bounceInUp" data-wow-delay="0.8s">
               <div class="team boxed-grey">
